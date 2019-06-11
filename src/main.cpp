@@ -29,18 +29,70 @@ WiFiClient client;
 
 String message = "";
 
-void turnMotor(int pin, int duration) {
-  digitalWrite(pin, HIGH);
-  delay(duration);
-  digitalWrite(pin, LOW);
-}
-
-void turnMotor(int pin1, int pin2, int duration) {
-  digitalWrite(pin1, HIGH);
-  digitalWrite(pin2, HIGH);
-  delay(duration);
-  digitalWrite(pin1, LOW);
-  digitalWrite(pin2, LOW);
+void turnMotor(int direction) {
+  switch(direction) {
+    // F
+    case 1:
+      digitalWrite(forward, HIGH);
+      digitalWrite(backward, LOW);
+      digitalWrite(left, LOW);
+      digitalWrite(right, LOW);
+      break;
+    // B
+    case -1:
+      digitalWrite(forward, LOW);
+      digitalWrite(backward, HIGH);
+      digitalWrite(left, LOW);
+      digitalWrite(right, LOW);
+      break;
+    // L
+    case -3:
+      digitalWrite(forward, LOW);
+      digitalWrite(backward, LOW);
+      digitalWrite(left, HIGH);
+      digitalWrite(right, LOW);
+      break;
+    // R
+    case 3:
+      digitalWrite(forward, LOW);
+      digitalWrite(backward, LOW);
+      digitalWrite(left, LOW);
+      digitalWrite(right, HIGH);
+      break;
+    // FL
+    case -2:
+      digitalWrite(forward, HIGH);
+      digitalWrite(backward, LOW);
+      digitalWrite(left, HIGH);
+      digitalWrite(right, LOW);
+      break;
+    // FR
+    case 4:
+      digitalWrite(forward, HIGH);
+      digitalWrite(backward, LOW);
+      digitalWrite(left, LOW);
+      digitalWrite(right, HIGH);
+      break;
+    // BL
+    case -4:
+      digitalWrite(forward, LOW);
+      digitalWrite(backward, HIGH);
+      digitalWrite(left, HIGH);
+      digitalWrite(right, LOW);
+      break;
+    // BR
+    case 2:
+      digitalWrite(forward, LOW);
+      digitalWrite(backward, HIGH);
+      digitalWrite(left, LOW);
+      digitalWrite(right, HIGH);
+      break;
+    default:
+      digitalWrite(forward, LOW);
+      digitalWrite(backward, LOW);
+      digitalWrite(left, LOW);
+      digitalWrite(right, LOW);
+  }
 }
 
 void setup() {
@@ -97,42 +149,7 @@ void loop() {
       int direction = message.toInt();
 
       // Motor control
-      if(direction != 0) {
-        switch(direction) {
-          // Forward
-          case 1:
-            turnMotor(forward, length);
-            break;
-          // Backward
-          case -1:
-            turnMotor(backward, length);
-            break;
-          // Right
-          case 3:
-            turnMotor(right, length);
-            break;
-          // Left
-          case -3:
-            turnMotor(left, length);
-            break;
-          // FL
-          case -2:
-            turnMotor(forward, left, length);
-            break;
-          // FR
-          case 4:
-            turnMotor(forward, right, length);
-            break;
-          // BL
-          case -4:
-            turnMotor(backward, left, length);
-            break;
-          // BR
-          case 2:
-            turnMotor(backward, right, length);
-            break;
-        }
-      }
+      turnMotor(direction);
 
       // Collect and send data from the sensors
       digitalWrite(trig, LOW);
@@ -159,6 +176,9 @@ void loop() {
   else {
     // Remember it's inverted
     digitalWrite(led, HIGH);
+
+    // If client disconnects we no longer want the motors to run
+    turnMotor(0);
 
     client = server.available();
   }
