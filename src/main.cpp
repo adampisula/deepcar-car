@@ -21,8 +21,8 @@ double distance;
 // Network
 #define port 5000
 
-const char* ssid = "linksys";
-const char* password = "Vasolka7";
+const char* ssid = "";
+const char* password = "";
 
 WiFiServer server(port);
 WiFiClient client;
